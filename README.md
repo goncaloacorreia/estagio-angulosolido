@@ -1,6 +1,6 @@
 # **Puppet**
 
-## O que é o Puppet?  
+## **O que é o Puppet?**  
 
 A framework Puppet foi criada por Luke Kanies e a sua empresa, Puppet Labs.  
 É usado principalmente para gerir configurações de sistemas UNIX,Linux e até mesmo Windows, tendo como principal função gerir um host durante todo o seu ciclo de vida, desde a build inicial aos upgrades, manutenção e finalmente o fim do ciclo, de forma a que haja uma interação contínua com os hosts em vez de serem apenas criados e "abandonados".  
@@ -46,4 +46,24 @@ Para uma lista completa dos _types_ e _attributes_ que o _Puppet_ dispõe, visit
 
 Quando completa a configuração dos recursos, o _Puppet_ automaticamente sabe como gerir determinado recurso a partir do momento em que um agente se conecta ao _Puppet Master_, através de uma ferramenta chama **_Facter_**, que retorna toda a informação acerca daquele agente, incluindo o sistema operativo que está a utilizar. O _Puppet_ escolhe o _package provider_ adequado para tal sistema operativo e usa esse mesmo _provider_ para verificar se determinado _package_ já se encontra ou não instalado e caso não esteja, instalá-lo (como foi visto no exemplo acima). No final desta operação, o _Puppet_ vai reportar ao _Puppet Master_ se a aplicação destes recursos foi bem sucedida ou não.
 
+##### **Facter**
+
+É uma ferramenta que retorna factos sobre cada agente, como o seu hostname, o endereço IP, o sistema operativo e a sua versão, juntamente com muitos outros dados, que são recolhidos a partir do momento em que o agente entra em execução. Os factos são enviados para o _Puppet Master_, que automaticamente são transformados em variáveis para o _Puppet_.  
+Caso seja necessário visualizar os factos disponíveis, basta correr o  _facter binary_ na linha de comandos. Cada facto é retornado como um par `key => value`. Por exemplo:  
+`operatingsystem => Ubuntu
+ipaddress => 10.0.0.10`  
+Quando combinados com a configuração definida no _Puppet_, estes factos permitem personalizar as configurações para cada host, como por exemplo, criar recursos genéricos como definições de _network_ e personalizar com dados de cada agente, ou até mesmo escolher de acordo com o sistema operativo em uso que comandos usar para instalar um determinado package (aptitude no Ubuntu, por exemplo).
+
 #### **Transactional Layer**
+
+A _Transactional Layer_ do _Puppet_ é o seu "motor" porque corresponde à parte de por em ação todas estas configurações, incluindo:
+
+* Interpretar e compilar as configurações 
+* Comunicar as configurações compiladas ao agente
+* Aplicar essas configurações no agente
+* Reportar os resultados desta aplicação ao _Puppet Master_
+
+O primeiro passo para o _Puppet_ é analisar a configuração e perceber como a aplicar no agente. Para isto, o _Puppet_ cria um gráfico com todos os recursos criados, as relações entre si e para cada agente. Isto permite trabalhar numa determinada ordem, baseada nas relações criadas para aplicar recursos a cada host. Este modelo é um dos pontos fortes do _Puppet_.  
+O _Puppet_ pega nos recursos e compila-os num "catálogo" para cada agente. O catálogo é enviado para o respetivo host e aplicado pelo agente. Os resultados desta aplicação são finalmente enviados para o _Puppet Master_ em forma de relatório.  
+A _Transactional Layer_ permite que sejam criadas configurações e que sejam aplicadas repetidamente num host. Apesar disto, as configurações podem ser aplicadas as vezes que forem necessárias num host sempre com o mesmo resultado, sem pôr em causa a consistência das mesmas.  
+Estas operações feitas pelo _Puppet_ não criam qualquer tipo de logs, ou seja, não se pode fazer um _rollback_ de qualquer transação. No entanto, podemos fazer estas transações num _noop (no operation mode)_, que permite testar uma execução sem fazer quaisquer mudanças num host.
