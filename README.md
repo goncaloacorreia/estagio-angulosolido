@@ -2,9 +2,9 @@
 
 ## **O que é o Puppet?**  
 
-A framework Puppet foi criada por Luke Kanies e a sua empresa, Puppet Labs.  
+A framework _Puppet_ foi criada por Luke Kanies e a sua empresa, Puppet Labs.  
 É usado principalmente para gerir configurações de sistemas UNIX,Linux e até mesmo Windows, tendo como principal função gerir um host durante todo o seu ciclo de vida, desde a build inicial aos upgrades, manutenção e finalmente o fim do ciclo, de forma a que haja uma interação contínua com os hosts em vez de serem apenas criados e "abandonados".  
-O Puppet possui um modelo que torna bastante fácil a sua compreensão e implementação. Esse modelo tem 3 componentes:
+O _Puppet_ possui um modelo que torna bastante fácil a sua compreensão e implementação. Esse modelo tem 3 componentes:
 
 * **Deployment**
 * **Configuration Layer e Resource Abstraction Layer**
@@ -12,7 +12,7 @@ O Puppet possui um modelo que torna bastante fácil a sua compreensão e impleme
 
 ### **Deployment**
 
-O Puppet é normalmente implementado num simples modelo cliente-servidor. O servidor é apelidado de _Puppet Master_, enquanto o software Puppet do cliente é descrito como um _agent_  e o host de cada agente em si é definido como um _node_.  
+O _Puppet_ é normalmente implementado num simples modelo cliente-servidor. O servidor é apelidado de _Puppet Master_, enquanto o software Puppet do cliente é descrito como um _agent_  e o host de cada agente em si é definido como um _node_.  
 
 ![pm-nodes](puppet-environments.png)  
 
@@ -29,14 +29,14 @@ Ao contrário de dizer como é que se deve proceder para chegar a determinada co
 Queremos por exemplo, instalar num conjunto de hosts a aplicação _vim_ em cada um deles. Se o pretendido fosse fazer este processo manualmente, era necessário uma conexão a cada host (incluindo a inserção de passwords, etc.), verificar se cada um já tem ou não o _vim_ instalado e caso não esteja, executar individualmente o comando de instalação.  
 No _Puppet_ a abordagem é diferente. Inicialmente começa por se definir uma configuração de recursos para o package _vim_. Cada recurso é constituído por um _type_ (tipo de recurso que está a ser usado), _title_ (o nome do recurso), e uma série de _attributes_ (valores que espeficam por exemplo, se o serviço está parado ou em funcionamento).  
 
-`package { "vim":  
-    ensure => present,  
-}`  
+`package { "vim":`  
+    `ensure => present,`     
+`}`
 
 As declarações acima representam que um package chamado "_vim_" deve ser instalado, sendo "package" o _type_. Esta definição é construída da seguinte forma:  
-`type { title:  
-    attribute => value,  
-}`
+`type { title:`  
+    `attribute => value,`  
+`}`
 
 Em relação aos atributos, estes dizem ao _Puppet_ qual o estado pretendido desta configuração. No exemplo acima descrito, o atributo _ensure_ especifica o estado do _package_ (instalado, desinstalado, etc.). Já o valor _present_ indica que queremos instalar o _package_. Caso o pretendido fosse desinstalar, teria que se alterar o valor do atrbuto para _absent_.
 
@@ -50,8 +50,8 @@ Quando completa a configuração dos recursos, o _Puppet_ automaticamente sabe c
 
 É uma ferramenta que retorna factos sobre cada agente, como o seu hostname, o endereço IP, o sistema operativo e a sua versão, juntamente com muitos outros dados, que são recolhidos a partir do momento em que o agente entra em execução. Os factos são enviados para o _Puppet Master_, que automaticamente são transformados em variáveis para o _Puppet_.  
 Caso seja necessário visualizar os factos disponíveis, basta correr o  _facter binary_ na linha de comandos. Cada facto é retornado como um par `key => value`. Por exemplo:  
-`operatingsystem => Ubuntu
-ipaddress => 10.0.0.10`  
+`operatingsystem => Ubuntu`  
+`ipaddress => 10.0.0.10`  
 Quando combinados com a configuração definida no _Puppet_, estes factos permitem personalizar as configurações para cada host, como por exemplo, criar recursos genéricos como definições de _network_ e personalizar com dados de cada agente, ou até mesmo escolher de acordo com o sistema operativo em uso que comandos usar para instalar um determinado package (aptitude no Ubuntu, por exemplo).
 
 #### **Transactional Layer**
@@ -67,3 +67,13 @@ O primeiro passo para o _Puppet_ é analisar a configuração e perceber como a 
 O _Puppet_ pega nos recursos e compila-os num "catálogo" para cada agente. O catálogo é enviado para o respetivo host e aplicado pelo agente. Os resultados desta aplicação são finalmente enviados para o _Puppet Master_ em forma de relatório.  
 A _Transactional Layer_ permite que sejam criadas configurações e que sejam aplicadas repetidamente num host. Apesar disto, as configurações podem ser aplicadas as vezes que forem necessárias num host sempre com o mesmo resultado, sem pôr em causa a consistência das mesmas.  
 Estas operações feitas pelo _Puppet_ não criam qualquer tipo de logs, ou seja, não se pode fazer um _rollback_ de qualquer transação. No entanto, podemos fazer estas transações num _noop (no operation mode)_, que permite testar uma execução sem fazer quaisquer mudanças num host.
+
+## **Versões do Puppet**
+
+O modelo mais comum de implementação do _Puppet_ é cliente-servidor. É lógico que para haver um bom funcionamento deste processo, o master e os seus agentes teriam que estar na mesma versão do _Puppet_, pode haver diferença de versões entre ambos, desde que o _Puppet Master_ esteja numa versão mais recente que os agentes. Apesar disto, é sempre mais recomendável ter a versão dos agentes o mais próximo possível do master, de forma a tirar a máxima perfomance do funcionamento do _Puppet_.  
+Cada versão  do _Puppet_ possui o formato X.Y.Z., onde:
+
+* X aumenta apenas para mudanças bastante significativas, que seriam incompatíveis com a versão anterior
+* Y aumenta apenas para novas funcionalidades que continuam a ser compatíveis com a versão anterior ou resoluções de bugs bastante significantes
+* Z aumenta apenas para pequenas resoluções de bugs
+
