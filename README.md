@@ -44,15 +44,7 @@ Para uma lista completa dos _types_ e _attributes_ que o _Puppet_ dispõe, visit
 
 #### **Resource Abstraction Layer**
 
-Quando completa a configuração dos recursos, o _Puppet_ automaticamente sabe como gerir determinado recurso a partir do momento em que um agente se conecta ao _Puppet Master_, através de uma ferramenta chama **_Facter_**, que retorna toda a informação acerca daquele agente, incluindo o sistema operativo que está a utilizar. O _Puppet_ escolhe o _package provider_ adequado para tal sistema operativo e usa esse mesmo _provider_ para verificar se determinado _package_ já se encontra ou não instalado e caso não esteja, instalá-lo (como foi visto no exemplo acima). No final desta operação, o _Puppet_ vai reportar ao _Puppet Master_ se a aplicação destes recursos foi bem sucedida ou não.
-
-##### **Facter**
-
-É uma ferramenta que retorna factos sobre cada agente, como o seu hostname, o endereço IP, o sistema operativo e a sua versão, juntamente com muitos outros dados, que são recolhidos a partir do momento em que o agente entra em execução. Os factos são enviados para o _Puppet Master_, que automaticamente são transformados em variáveis para o _Puppet_.  
-Caso seja necessário visualizar os factos disponíveis, basta correr o  _facter binary_ na linha de comandos. Cada facto é retornado como um par `key => value`. Por exemplo:  
-`operatingsystem => Ubuntu`  
-`ipaddress => 10.0.0.10`  
-Quando combinados com a configuração definida no _Puppet_, estes factos permitem personalizar as configurações para cada host, como por exemplo, criar recursos genéricos como definições de _network_ e personalizar com dados de cada agente, ou até mesmo escolher de acordo com o sistema operativo em uso que comandos usar para instalar um determinado package (aptitude no Ubuntu, por exemplo).
+Quando completa a configuração dos recursos, o _Puppet_ automaticamente sabe como gerir determinado recurso a partir do momento em que um agente se conecta ao _Puppet Master_, através de uma ferramenta chama **_Facter_** (abordado mais à frente), que retorna toda a informação acerca daquele agente, incluindo o sistema operativo que está a utilizar. O _Puppet_ escolhe o _package provider_ adequado para tal sistema operativo e usa esse mesmo _provider_ para verificar se determinado _package_ já se encontra ou não instalado e caso não esteja, instalá-lo (como foi visto no exemplo acima). No final desta operação, o _Puppet_ vai reportar ao _Puppet Master_ se a aplicação destes recursos foi bem sucedida ou não.
 
 #### **Transactional Layer**
 
@@ -77,3 +69,37 @@ Cada versão  do _Puppet_ possui o formato X.Y.Z., onde:
 * Y aumenta apenas para novas funcionalidades que continuam a ser compatíveis com a versão anterior ou resoluções de bugs bastante significantes
 * Z aumenta apenas para pequenas resoluções de bugs
 
+Principais upgrades introduzidos em versões major do _Puppet_:
+
+* [Puppet 4](https://github.com/puppetlabs/docs-archive/blob/main/puppet/4.0/release_notes.markdown):  
+Mudanças no _Support_, repositórios e na instalação, nova versão da linguagem, diferença nos  URL's que os agentes utilizam para comunicar com o master, bug fixes, etc.
+
+* [Puppet 5](https://github.com/puppetlabs/docs-archive/blob/main/puppet/5.0/release_notes.markdown): 
+Aquando do release desta versão, houve bastates funções que eram **_deprecated_** (já não estavam a ser úteis ao funcionamento do _Puppet_ mas ainda constavam no código fonte do mesmo) no _Puppet 4_, adição de novas funções como _call_ e _unique_ e upgrade das versões de _Ruby_ e _Hiera_ (detalhado mais à frente).
+
+* [Puppet 7](https://puppet.com/blog/whats-new-in-puppet-7-platform/): 
+Upgrade da versão do _Facter_ (4) e do _Ruby_ (2.7), mudanças na organização dos ficheiros, nas definições e em alguns comandos da aplicação e ainda mudanças na linguagem e no próprio servidor.
+
+## **Tecnologias relevantes no Puppet**
+
+* **Facter**   
+É uma ferramenta que retorna factos sobre cada agente, como o seu hostname, o endereço IP, o sistema operativo e a sua versão, juntamente com muitos outros dados, que são recolhidos a partir do momento em que o agente entra em execução. Os factos são enviados para o _Puppet Master_, que automaticamente são transformados em variáveis para o _Puppet_.  
+Caso seja necessário visualizar os factos disponíveis, basta correr o  _facter binary_ na linha de comandos. Cada facto é retornado como um par `key => value`. Por exemplo:  
+`operatingsystem => Ubuntu`  
+`ipaddress => 10.0.0.10`  
+Quando combinados com a configuração definida no _Puppet_, estes factos permitem personalizar as configurações para cada host, como por exemplo, criar recursos genéricos como definições de _network_ e personalizar com dados de cada agente, ou até mesmo escolher de acordo com o sistema operativo em uso que comandos usar para instalar um determinado package (aptitude no Ubuntu, por exemplo).
+
+* **Hiera**  
+Um dos pontos fortes do _Puppet_ é o facto do código ser reutilizável. Um código que serve várias necessidades tem que ser configurável: colocar informação específica numa configuração externa, em vez de estar presente no código fonte.  
+O _Puppet_ utiliza o _Hiera_ em duas vertentes, sendo elas guardar os dados das configurações em pares _key-value_ e procurar que dados é que um certo módulo precisa para aplicar a um certo _node_ durante a compilação de um catálogo. Estas duas operações são feitas, respetivamente, através de [_Automatic Parameter Lookup_](https://puppet.com/docs/puppet/7/hiera_automatic.html#hiera_automatic) para classes incluídas num catálogo e _Explicit lookup calls_.  
+A hierarquia de _lookups_ do _Hiera_ funciona através de um padrão de _"defaults, with overrides”_, ou seja, se a solução _default_ não funcionar temos uma hierarquia de alternativas. O _Hiera_ usa os factos do _Puppet_ para especificar as _data sources_, para que seja possível existir um _override_ na infraestrutura em causa.
+
+* **Puppet Server**  
+O _Puppet_ é configurado numa arquitetura agente-servidor, em que o servidor primário (_Puppet Master_) gere as configurações de todos os _agent nodes_. O _Puppet Server_ atua como o servidor primário, sendo ele uma aplicação em _Ruby_ que corre numa Java Virtual Machine (JVM) e tem como objetivo compilar os catálogos e determinados ficheiros nos interpretadores de _JRuby_.
+
+* **Puppet DB**  
+Todos os dados gerados pelo _Puppet_ (factos, catálogos ou reports) são guardados na _PuppetDB_.  
+Guardar toda a informação nesta base de dados permite ao _Puppet_ operar mais rapidamente e permite que as aplicações acedam à informação mais facilmente.
+
+* **r10k**  
+É uma ferramenta que permite gerir as configurações de um determinado ambiente. As alterações no código são feitas através da linha de comandos do _r10k_ no servidor primário. Com base no código nos branches dos repositórios de controlo, o _r10k_ cria ambientes no server primário para aplicar em cada _node_. _MCollective_ era uma tecnologia semelhante a esta, mas que deixou de estar em uso a partir do _Puppet 6_.
