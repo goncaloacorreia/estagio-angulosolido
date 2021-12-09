@@ -30,9 +30,8 @@ E em seguida dar update à lista de packages apt:
 
 ### **Antes de instalar**
 
-Antes da instalação, há que rever os sistemas operativos suportados e a versão do java, uma vez que este componente corre numa JVM (Java Virtual Machine). Ao contrário do Puppet Agent, o Puppet Server não é suportado para MacOS, mas sim em Red Hat Enterprise Linux 6, 7, 8, Debian 9 (Stretch), 10 (Buster)
+Antes da instalação, há que rever os sistemas operativos suportados. Ao contrário do Puppet Agent, o Puppet Server não é suportado para MacOS, mas sim em Red Hat Enterprise Linux 6, 7, 8, Debian 9 (Stretch), 10 (Buster)
 Ubuntu 16.04 (Xenial, amd64 only), 18.04 (Bionic), 20.04 (Focal) e SLES 12 SP1 (x86_64).  
-O Puppet Server está configurado para usar 2GB de RAM por default, porém se for executado numa Virtual Machine (processo que iremos ver mais à frente) esta porção de memória deixa de ser necessária.
 
 ### **Instalação**
 
@@ -44,22 +43,6 @@ Iniciar o serviço Puppet Server, executando:
 
 Verificar se o serviço está instalado corretamente:  
 `puppetserver -v`
-
-### **Instalação numa VM (opcional)**
-
-Se corrermos o Puppet Server numa Virtual Machine iriam ser utilizados no mínimo apenas 512 MB de RAM em vez dos 2GB.  
-Para mudar a alocação de memória do Puppet Server basta editar o _init config_ file:  
-
-1. Abrir o ficheiro da app:  
-`/etc/default/puppetserver`
-  
-2. Adicionar a seguinte linha para definir quanta memória se pretende alocar ao Puppet Server:  
-`JAVA_ARGS="-Xms2g -Xmx2g"`  
-Por exemplo, para alocar 1GB de memória, usar `JAVA_ARGS="-Xms1g -Xmx1g"`, para 512MB usar `JAVA_ARGS="-Xms512m -Xmx512m"`.
-
-3. Reiniciar o serviço Puppet Server.
-
-Para mais personalizações nas definições de uma JVM, visitar este [link](http://docs.oracle.com/cd/E15523_01/web.1111/e13814/jvm_tuning.htm).
 
 ## **Instalação e configuração dos Puppet Agents**
 
