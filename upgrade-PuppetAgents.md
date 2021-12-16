@@ -1,8 +1,6 @@
-# **Upgrade do Puppet 3 para Puppet 7**
+# **Upgrade dos Agents Puppet 3 para Puppet 7**
 
 ## **Puppet 3 para Puppet 5**
-
-### **Puppet Agents**
 
 Apesar de terem havido várias mudanças no Puppet desde a versão 3.8, o processo de upgrade dos agentes do Puppet 3 pode ser automatizado ao contrário dos seus servidores.  O módulo _puppet agent_ executa automaticamente as seguintes tarefas:
 
@@ -28,5 +26,8 @@ Processo de instalação dos agentes:
 
 3. Depois de feito o upgrade, é recomendado fazer as [post-upgrade clean-up tasks](https://puppet.com/docs/puppet/5.5/upgrade_major_post.html).
 
-### **Puppet Server**
+## **Puppet 5 para Puppet 7**
 
+Para dar upgrade aos puppet agents, apenas é necessário adicionar as duas keys que se seguem ao global Hiera e esperar por dois puppet-runs:  
+`profile::puppet::collection: 'puppet7'`  
+`puppet_agent::package_version: 'auto'`
