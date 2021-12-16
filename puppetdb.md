@@ -19,3 +19,6 @@ Permite também uma maior segurança em relação a não perder os dados que vã
 O Puppet irá recusar-se a usar quaisquer catálogos que a PuppetDB não tenha conhecimento ou caso esta não esteja disponível, ou seja, os agentes vão usar catálogos sempre atualizados e que estejam presentes na PuppetDB.  
 A comunicação com o Puppet Master acontece através de SSL, autenticado com os mesmos certificados utilizados para conectar o master aos agentes.
 
+## **Conclusão**
+
+Apesar da revisão de todas estas vantagens de utilizar PuppetDB, foi decidido neste projeto a não utilização da ferramenta, visto que não se iria justificar a introdução de uma nova peça com este conjunto de funcionalidades.
