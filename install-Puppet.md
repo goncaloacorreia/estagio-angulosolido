@@ -32,6 +32,7 @@ E em seguida dar update à lista de packages apt:
 
 Antes da instalação, há que rever os sistemas operativos suportados. Ao contrário do Puppet Agent, o Puppet Server não é suportado para MacOS, mas sim em Red Hat Enterprise Linux 6, 7, 8, Debian 9 (Stretch), 10 (Buster)
 Ubuntu 16.04 (Xenial, amd64 only), 18.04 (Bionic), 20.04 (Focal) e SLES 12 SP1 (x86_64).  
+Certificar também que o sistema possui pelo menos 2GB de RAM disponíveis.
 
 ### **Instalação**
 
