@@ -37,7 +37,7 @@ Certificar também que o sistema possui pelo menos 2GB de RAM disponíveis.
 ### **Instalação**
 
 Agora sim, proceder à instalação do package em si através do seguinte comando:  
-`apt-get install puppetserver`
+`sudo apt-get install puppetserver`
 
 Iniciar o serviço Puppet Server, executando:  
 `sudo systemctl start puppetserver`
