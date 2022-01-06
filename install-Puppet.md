@@ -83,6 +83,9 @@ Irá aparecer uma mensagem do tipo:
 * No node do agente, executar de novo o agente:  
 `sudo -i puppet ssl bootstrap`
 
+* Para testar a ligação entre master e agente:
+`sudo -i puppet agent -t`
+
 ## **Instalação de uma PuppetDB (opcional)**
 
 A instalação da PuppetDB é opcional e tem como vantagem as suas funcionalidades extra das outras bases de dados, tais como queries melhoradas e reports acerca da infraestrutura.  
