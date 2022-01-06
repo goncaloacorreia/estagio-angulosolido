@@ -83,7 +83,7 @@ Irá aparecer uma mensagem do tipo:
 * No node do agente, executar de novo o agente:  
 `sudo -i puppet ssl bootstrap`
 
-* Para testar a ligação entre master e agente:
+* Para testar a ligação entre master e agente:  
 `sudo -i puppet agent -t`
 
 ## **Instalação de uma PuppetDB (opcional)**
