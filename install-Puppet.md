@@ -86,6 +86,21 @@ Irá aparecer uma mensagem do tipo:
 * Para testar a ligação entre master e agente:  
 `sudo -i puppet agent -t`
 
+#### Em caso de haver problemas:
+* /etc/hosts no master:  
+127.0.0.1 localhost  
+127.0.1.1 master.local master  
+3.86.222.210 puppet  
+
+* /etc/hosts no agente:  
+127.0.0.1 agent1.local agent1 localhost  
+3.86.222.210 master.local master
+
+* /etc/puppetlabs/puppet/puppet.conf no agente:  
+[main]  
+server = master.local
+
+
 ## **Instalação de uma PuppetDB (opcional)**
 
 A instalação da PuppetDB é opcional e tem como vantagem as suas funcionalidades extra das outras bases de dados, tais como queries melhoradas e reports acerca da infraestrutura.  
