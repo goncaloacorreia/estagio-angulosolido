@@ -1,12 +1,12 @@
-# Install and Configure R10k
+# Instalação e configuração do r10k
 
-Install r10k via Ruby Gems.
+Instalação do r10k via Ruby Gems.
 
 ```
 /opt/puppetlabs/puppet/bin/gem install r10k
 ```
 
-Configure r10k by creating the following directory structure and file `/etc/puppetlabs/r10k/r10k.yaml` and ensuring it has the following contents:
+Configurar o r10k criando a seguinte estrutura de diretórios e o ficheiro `/etc/puppetlabs/r10k/r10k.yaml` assegurando que contém a seguinte informação:
 
 ```
 # The location to use for storing cached Git repos
@@ -19,13 +19,11 @@ Configure r10k by creating the following directory structure and file `/etc/pupp
     remote: 'git@github.com:$_Insert GitHub Organization Here_$/$_Insert GitHub Repository That Will Be Used For Your Puppet Code Here_$'
     basedir: '/etc/puppetlabs/code/environments'
 ```
-# Configure Puppet Code Repository
+# Configurar o Repositório para o Puppet Code
 
-Populate the repository by cloning it locally and performing each of the following actions within it:
+Popular o repositório clonando o mesmo localmente e executando cada uma das seguintes ações:
 
-Note that puppet defaults to the `production` environment. You may wish to change your default git
-branch from `master` to `production` in order to match this. Alternatively, you can set your agents'
-environment to `master`.
+Ter em conta que o environment default do puppet é `production`. É recomendado alterar o git branch default de `master` para `production` de modo a corresponder. Em alternativa, é possível também definir o environment do agente para `master`.
 
 ```
 mkdir -p {modules,site/profile/manifests,hieradata}
@@ -36,68 +34,80 @@ touch Puppetfile
 touch site.pp
 ```
 
-Edit the `environment.conf` file and ensure it has the following contents:
+Editar `environment.conf` e garantir que tem os seguintes conteúdos:
 
 ```
 manifest = site.pp
 modulepath = modules:site
 ```
 
-Edit the `site.pp` file and ensure it has the following contents:
+Editar `site.pp` e garantir que tem os seguintes conteúdos:
 
 ```
 hiera_include('classes')
 ```
 
-Edit the `hieradata/common.yaml file and ensure it has the following contents:
+Ou, no caso de não querermos referenciar o hiera, podemos incluir a informação neste ficheiro:
+```
+node agent1.local {
+  include ntp
+}
+
+class { 'ntp':
+  servers => [ '0.europe.pool.ntp.org',
+  '1.europe.pool.ntp.org',
+  '2.europe.pool.ntp.org',
+  '3.europe.pool.ntp.org' ],
+}
+
+```
+
+Editar `hieradata/common.yaml e garantir que tem os seguintes conteúdos:
 ```
 ---
 classes:
  - 'profile::base'
 
 ntp::servers:
-  - 0.us.pool.ntp.org
-  - 1.us.pool.ntp.org
+  - 0.europe.pool.ntp.org
+  - 1.europe.pool.ntp.org
+  - 2.europe.pool.ntp.org
+  - 3.europe.pool.ntp.org
 ```
-Edit the `Puppetfile` file and ensure it has the following contents:
+Editar `Puppetfile` e garantir que tem os seguintes conteúdos:
 ```
 forge 'forge.puppetlabs.com'
 
 # Forge Modules
-mod 'puppetlabs/ntp', '4.1.0'
+mod 'puppetlabs-ntp', '9.1.0'
 mod 'puppetlabs/stdlib'
 ```
-Edit the `site/profile/manifests/base.pp` file and ensure it has the following contents:
+Editar `site/profile/manifests/base.pp` e garantir que tem os seguintes conteúdos:
 ```
 class profile::base {
   class { '::ntp': }
 }
 ```
-Ensure that the user r10k runs as (typically root) can access the git
-repository. See the [git environment guide](git-environments.mkd)
-for more detail.  You can test
-the access by using su/sudo to perform `git clone yourrepoURL` as the correct
-user.
-# Summary
-We now have the following functional pieces:
+Garantir que o r10k corre de maneira a aceder ao repositório git. Pode-se testar o acesso ao mesmo usando `sudo git clone yourrepoURL`.
+# Resumo
+Temos agora as seguintes peças a funcionar:
 1. Puppet master
 2. Hiera
 3. r10k
-4. Puppet code repository
-5. Initial 'profile' named 'base' that will configure NTP on our servers.
-This base will allow us to do all sorts of useful things. Most interesting (to me and for the purposes of this tutorial) is the ability to now utilize Git branches to help manage infrastructure as part of your software development lifecycle. Now, when you want to test a new profile, you can do the following:
-1. Create a new branch of the Puppet code repository
-2. Create your Puppet code in this new branch
-3. Push the new branch up to the repository
-4. Deploy it as a new environment using the `/opt/puppetlabs/puppet/bin/r10k deploy environment -p` command.
-From any agent node (including the master), you may run the agent against the new environment by specifying it on the command line. For example, if you create the branch `test`, run puppet as:
+4. Repositório para o Puppet Code
+5. 'profile' inicial com o nome 'base' que irá configurar o NTP nos agentes.
+Esta base irá servir para fazer variadas funções. A parte mais interessante é mesmo a capacidade de utilizar Git branches para ajudar a gerir a infraestrutura como parte do ciclo de vida do desenvolvimento de software. Agora, quando for necessário testar um novo profile, podemos fazer o seguinte:
+1. Criar um novo branch no repositório
+2. Criar código Puppet neste novo branch
+3. Push deste novo branch para o repositório
+4. Deploy como um novo environment usando: `/opt/puppetlabs/puppet/bin/r10k deploy environment -p`.
+A partir de qualquer agente (incluindo o master), podemos correr o teste a este novo environment, especificando-o na linha de comandos. Por exemplo, se a nova branch tiver o nome `test`, utilizar o seguinte comando:
 ```
 puppet agent -t --environment test
 ```
-You can also modify the `/etc/puppetlabs/puppet/puppet.conf` file on a node and add the environment setting to the agent section to make the change permanent:
+Como foi dito anteriormente, podemos também modificar `/etc/puppetlabs/puppet/puppet.conf` num node e adicionar um environment predefinido:
 ```
 ...
 [agent]
 environment = test
 ```
-Voila - you're testing code without impacting your production environment!
