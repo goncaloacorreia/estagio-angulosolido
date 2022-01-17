@@ -100,10 +100,10 @@ Esta base irá servir para fazer variadas funções. A parte mais interessante �
 1. Criar um novo branch no repositório
 2. Criar código Puppet neste novo branch
 3. Push deste novo branch para o repositório
-4. Deploy como um novo environment usando: `/opt/puppetlabs/puppet/bin/r10k deploy environment -p`.  
+4. Deploy como um novo environment usando: `sudo /opt/puppetlabs/puppet/bin/r10k deploy environment -p`.  
 A partir de qualquer agente (incluindo o master), podemos correr o teste a este novo environment, especificando-o na linha de comandos. Por exemplo, se a nova branch tiver o nome `test`, utilizar o seguinte comando:
 ```
-puppet agent -t --environment test
+sudo -i puppet agent -t --environment test
 ```
 Como foi dito anteriormente, podemos também modificar `/etc/puppetlabs/puppet/puppet.conf` num node e adicionar um environment predefinido:
 ```
