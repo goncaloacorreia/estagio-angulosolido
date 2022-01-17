@@ -47,7 +47,7 @@ Editar `site.pp` e garantir que tem os seguintes conteúdos:
 hiera_include('classes')
 ```
 
-Ou, no caso de não querermos referenciar o hiera, podemos incluir a informação neste ficheiro:
+Ou, no caso de não querermos referenciar o hiera, podemos incluir a informação toda neste ficheiro:
 ```
 node agent1.local {
   include ntp
