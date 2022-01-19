@@ -19,6 +19,25 @@ Configurar o r10k criando a seguinte estrutura de diretórios e o ficheiro `/etc
     remote: 'git@github.com:$_Insert GitHub Organization Here_$/$_Insert GitHub Repository That Will Be Used For Your Puppet Code Here_$'
     basedir: '/etc/puppetlabs/code/environments'
 ```
+
+Configurar também o ficheiro `/etc/puppetlabs/puppet/hiera.yaml` com os seguintes conteúdos:  
+```
+---
+# Hiera 5 Global configuration file
+
+version: 5
+
+defaults:
+  datadir: /etc/puppetlabs/code/environments/%{environment}/hieradata/
+  data_hash: yaml_data
+
+hierarchy:
+  - name: "Common"
+    paths:
+      - "common.yaml"
+
+```
+
 # Configurar o Repositório para o Puppet Code
 
 Popular o repositório clonando o mesmo localmente e executando cada uma das seguintes ações:
@@ -28,7 +47,6 @@ Ter em conta que o environment default do puppet é `production`. É recomendado
 ```
 mkdir -p {modules,site/profile/manifests,hieradata}
 touch hieradata/common.yaml
-touch site/profile/manifests/base.pp
 touch environment.conf
 touch Puppetfile
 touch site.pp
@@ -44,30 +62,17 @@ modulepath = modules:site
 Editar `site.pp` e garantir que tem os seguintes conteúdos:
 
 ```
-hiera_include('classes')
-```
-
-Ou, no caso de não querermos referenciar o hiera, podemos incluir a informação toda neste ficheiro:
-```
 node agent1.local {
   include ntp
 }
 
 class { 'ntp':
-  servers => [ '0.europe.pool.ntp.org',
-  '1.europe.pool.ntp.org',
-  '2.europe.pool.ntp.org',
-  '3.europe.pool.ntp.org' ],
 }
-
 ```
 
 Editar `hieradata/common.yaml e garantir que tem os seguintes conteúdos:
 ```
 ---
-classes:
- - 'profile::base'
-
 ntp::servers:
   - 0.europe.pool.ntp.org
   - 1.europe.pool.ntp.org
@@ -82,12 +87,7 @@ forge 'forge.puppetlabs.com'
 mod 'puppetlabs-ntp', '9.1.0'
 mod 'puppetlabs/stdlib'
 ```
-Editar `site/profile/manifests/base.pp` e garantir que tem os seguintes conteúdos:
-```
-class profile::base {
-  class { '::ntp': }
-}
-```
+
 Garantir que o r10k corre de maneira a aceder ao repositório git. Pode-se testar o acesso ao mesmo usando `sudo git clone yourrepoURL`.
 # Resumo
 Temos agora as seguintes peças a funcionar:
@@ -101,13 +101,13 @@ Esta base irá servir para fazer variadas funções. A parte mais interessante �
 2. Criar código Puppet neste novo branch
 3. Push deste novo branch para o repositório
 4. Deploy como um novo environment usando: `sudo /opt/puppetlabs/puppet/bin/r10k deploy environment -p`.  
-A partir de qualquer agente (incluindo o master), podemos correr o teste a este novo environment, especificando-o na linha de comandos. Por exemplo, se a nova branch tiver o nome `test`, utilizar o seguinte comando:
+A partir de qualquer agente (incluindo o master), podemos correr o teste a este novo environment, especificando-o na linha de comandos. Por exemplo, se a nova branch tiver o nome `teste`, utilizar o seguinte comando:
 ```
-sudo -i puppet agent -t --environment test
+sudo -i puppet agent -t --environment teste
 ```
 Como foi dito anteriormente, podemos também modificar `/etc/puppetlabs/puppet/puppet.conf` num node e adicionar um environment predefinido:
 ```
 ...
 [agent]
-environment = test
+environment = teste
 ```
