@@ -32,11 +32,12 @@ E em seguida dar update à lista de packages apt:
 
 Antes da instalação, há que rever os sistemas operativos suportados. Ao contrário do Puppet Agent, o Puppet Server não é suportado para MacOS, mas sim em Red Hat Enterprise Linux 6, 7, 8, Debian 9 (Stretch), 10 (Buster)
 Ubuntu 16.04 (Xenial, amd64 only), 18.04 (Bionic), 20.04 (Focal) e SLES 12 SP1 (x86_64).  
+Certificar também que o sistema possui pelo menos 2GB de RAM disponíveis.
 
 ### **Instalação**
 
 Agora sim, proceder à instalação do package em si através do seguinte comando:  
-`apt-get install puppetserver`
+`sudo apt-get install puppetserver`
 
 Iniciar o serviço Puppet Server, executando:  
 `sudo systemctl start puppetserver`
@@ -65,22 +66,40 @@ Esta operação também pode ser feita através da alteração do PATH nos fiche
 
 2. Configuração do server setting  
 Esta etapa permitirá definir a setting _server = puppetserver.example.com_ em puppet.conf.
-`puppet config set server puppetserver.example.com --section main`  
+`sudo -i puppet config set server puppetserver.example.com --section main`  
 Além desta operação é possível alterar outras definições como por exemplo serverport, ca_server, ca_port, report_server, report_port.
 
 3. Conectar o agent ao Server primário e validar o certificado  
 Depois de adicionado o Server, é necessário conectar o Puppet agent ao Server primário para que este verifique em intervalos regulares o estado do mesmo, retornando o respetivo catálogo e atualizar a configuração, se necessário.
 
 * Para conectar o agente ao Server primário, executar:  
-`puppet ssl bootstrap`  
+`sudo -i puppet ssl bootstrap`  
 Irá aparecer uma mensagem do tipo:  
 `Info: Creating a new RSA SSL key for <agent node>`
 
 * No node do server primário, validar o certificado:  
-`sudo puppetserver ca sign --certname <name>`
+`sudo -i puppetserver ca sign --certname <name>`
 
 * No node do agente, executar de novo o agente:  
-`puppet ssl bootstrap`
+`sudo -i puppet ssl bootstrap`
+
+* Para testar a ligação entre master e agente:  
+`sudo -i puppet agent -t`
+
+#### Em caso de haver problemas:
+* /etc/hosts no master:  
+127.0.0.1 localhost  
+127.0.1.1 master.local master  
+3.86.222.210 puppet  
+
+* /etc/hosts no agente:  
+127.0.0.1 agent1.local agent1 localhost  
+3.86.222.210 master.local master
+
+* /etc/puppetlabs/puppet/puppet.conf no agente:  
+[main]  
+server = master.local
+
 
 ## **Instalação de uma PuppetDB (opcional)**
 
