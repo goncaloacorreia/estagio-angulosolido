@@ -89,7 +89,7 @@ mod 'puppetlabs/stdlib'
 ```
 
 Garantir que o r10k corre de maneira a aceder ao repositório git. Pode-se testar o acesso ao mesmo usando `sudo git clone yourrepoURL`.
-# Resumo
+## Resumo
 Temos agora as seguintes peças a funcionar:
 1. Puppet master
 2. Hiera
