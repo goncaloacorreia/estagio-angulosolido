@@ -38,7 +38,7 @@ hierarchy:
 
 ```
 
-# Configurar o Repositório para o Puppet Code
+## Configurar o Repositório para o Puppet Code
 
 Popular o repositório clonando o mesmo localmente e executando cada uma das seguintes ações:
 
