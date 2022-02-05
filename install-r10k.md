@@ -1,6 +1,6 @@
 # Instalação e configuração do r10k
 
-Instalação do r10k via Ruby Gems.
+Instalação do r10k via Ruby Gems:
 
 ```
 /opt/puppetlabs/puppet/bin/gem install r10k
