@@ -1,0 +1,513 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage{enumitem}
+\usepackage{a4wide}
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage[parfill]{parskip}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{titlesec}
+\setcounter{secnumdepth}{4}
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+\usepackage{enumerate}
+
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+    
+\pagestyle{fancy}
+\fancyhf{}
+
+\renewcommand{\headrulewidth}{0.03cm}% 2pt header rule
+\renewcommand{\headrule}{\hbox to\headwidth{%
+  \color{castanho-ue}\leaders\hrule height \headrulewidth\hfill}}
+
+\renewcommand{\footrulewidth}{0.03cm}% 2pt header rule
+\renewcommand{\footrule}{\hbox to\headwidth{%
+  \color{castanho-ue}\leaders\hrule height \headrulewidth\hfill}}
+  
+\rfoot{\thepage}
+
+\definecolor{castanho-ue}{HTML}{ad4758}
+
+\pagenumbering{roman}
+\begin{document}
+
+\begin{titlepage}
+
+\begin{minipage}{0.7\textwidth}
+\noindent\LARGE\textbf{Atualização de infraestrutura de orquestração open source Puppet 3 para open source Puppet LTS 7\\\\}
+\Large{Licenciatura em Eng. Informática\\}
+\large{Estágio-Projecto 2021-2022\\}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}\raggedleft
+\includegraphics[width=.9\linewidth]{di.pdf}
+\end{minipage}
+\noindent
+\includegraphics[trim={0 2cm 0 0}, clip,  width=\linewidth]{claustros.png}\\
+
+\vspace{0.5cm}
+\noindent\textcolor{castanho-ue}{\rule{\textwidth}{0.03cm}}
+
+\vspace{0.5cm}
+\noindent\large\textbf{Gonçalo André Correia\\}
+
+\noindent
+Orientador na empresa: Eng. Pedro Pessoa\\     
+Orientador no departamento: Prof. Dr. José Saias
+
+\emph{\\Trabalho desenvolvido na empresa Angulo Sólido no âmbito da disciplina de Estágio-Projeto da Licenciatura em Eng. Informática.}\\ 
+
+\begin{flushright}
+\emph{Évora, \today}
+\end{flushright}
+
+\end{titlepage}
+
+
+\cleardoublepage
+\tableofcontents
+
+\cleardoublepage
+\pagenumbering{arabic}
+\section{Introdução}
+
+\subsection{Enquadramento}
+O projeto de estágio foi desenvolvido pelo aluno Gonçalo André Correia, na instituição Angulo Sólido. Enquadra-se no âmbito da disciplina de Estágio-Projeto da Licenciatura em Eng. Informática da Universidade de Évora. Conta com a orientação do Eng. Pedro Pessoa, CEO da Angulo Sólido, e do Dr. José Saias, professor na Universidade de Évora. O projeto realizado obedeceu às seguintes condições previamente estabelecidas: ter início a 20 de dezembro de 2021 e término a 22 de janeiro de 2022 apresentando uma carga horária compatível acordada entre a empresa e o aluno cumprindo as tarefas propostas a executar.
+
+A Angulo Sólido, sediada em Évora, é uma empresa que se dedica à prestação de serviços de operações baseados em soluções de código aberto \cite{opensource}. Os principais alvos de mercado são pequenas e médias empresas no mercado global que pretendam aceder a uma equipa de operações pronta. Com cerca de 15 anos de experiência na entrega de soluções de código aberto, a empresa pretende contribuir para o rápido desenvolvimento das soluções dos seus clientes.
+
+O trabalho de estágio foi desenvolvido, unicamente, pelo estagiário, uma vez que não se encontrava integrado numa equipa.
+
+\subsection{Objetivos}
+O trabalho de estágio, desenvolvido na instituição Angulo Sólido, tem como principal objetivo a partir de um sistema instalado e em utilização, pretende-se estudar, planear e executar, total ou parcialmente, a atualização do mesmo.
+
+\subsection{Contribuições}
+O desempenho no desenvolvimento deste projeto de estágio não teria sido o mesmo sem a ajuda e apoio de algumas pessoas, às quais gostaria de aqui expressar o meu reconhecimento pela sua contribuição direta ou indiretamente:
+
+Assim, começaria por agradecer ao orientador Prof. Dr. José Saias pelo seu acompanhamento.
+
+Um agradecimento especial ao Eng. Pedro Pessoa pelo apoio, liderança e pela forma como me recebeu na empresa Angulo Sólido. 
+
+Queria agradecer também ao Eng. Miguel Carvalho pela disponibilidade que mostrou sempre que surgiu alguma dúvida na parte mais técnica deste projeto.
+
+E finalmente, aos meus familiares que me apoiaram sempre que tive que trabalhar remotamente, a partir de casa. 
+
+A todos os que estão e não estão aqui indicados, o meu obrigado.
+
+\subsection{Estrutura do documento}
+Este documento está organizado da seguinte maneira:
+\begin{itemize}
+	\item Secção 2 - Ambiente empresarial - contexto da empresa e o meu projeto.
+	\item Secção 3 - Estado da Arte - levantamento e análise de várias ferramentas ou metodologias.
+	\item Secção 4 - Ambiente de desenvolvimento - descrição do ambiente de hardware e software.
+	\item Secção 5 - Trabalho desenvolvido - trabalho elaborado durante o estágio.
+	\item Secção 6 - Avaliação crítica - análise da experiência do ponto vista técnico e não técnico.
+\end{itemize}
+
+\cleardoublepage
+\section{Ambiente empresarial}
+A Angulo Sólido, é uma empresa portuguesa, com a sua sede em Évora e uma filial em Lisboa. Trata-se de uma empresa privada detida e gerida pelo Eng. Pedro Pessoa e pelo Eng. Gustavo Homem. Dedica-se à prestação de serviços de operações baseados em soluções de código aberto \cite{opensource}.
+
+Apresenta cerca de 15 anos de experiência e pretende contribuir para o rápido desenvolvimento das soluções dos seus clientes.
+
+A empresa é constituída por equipas, onde cada equipa da empresa é associada a um ou mais clientes e é responsável por trabalhar com eles.
+
+No primeiro dia do estágio, dirigi-me à sede em Évora, tal como noutras ocasiões em que precisei de apoio mais detalhado sobre certas temáticas. Nos restantes dias o estágio foi realizado remotamente.
+
+\cleardoublepage
+\section{Estado da arte}
+No âmbito do trabalho de estágio foi necessário realizar análise de entre o leque de ferramentas propostas, quais iriam ser utilizadas, sendo elas Puppet \cite{puppet}, Hiera \cite{hiera}, r10k \cite{r10k} e PuppetDB \cite{puppetdb}. Foi feita então a decisão da não inclusão da ferramenta PuppetDB \cite{puppetdb} e a inclusão das outras tecnologias que se revelaram totalmente pertinentes, visto que cada uma delas iria ter um papel crucial no desenvolvimento do projeto tendo em conta o objetivo do mesmo. A PuppetDB é um serviço open source \cite{opensource} para guardar dados gerados pelo Puppet. Foi concebido para reforçar o uso do Puppet com o aumento da performance em mente, guardando toda a informação assíncronamente, libertando o Puppet Master \cite{puppet-master} para compilar mais catálogos em simultâneo, garantindo também a integridade dos dados guardados na própria PuppetDB.
+
+Apesar da revisão de todas estas vantagens de utilizar PuppetDB, foi decidido neste projeto a não utilização da ferramenta, visto que não se iria justificar a introdução de uma nova peça com este conjunto de funcionalidades.
+\cleardoublepage
+\section{Ambiente de desenvolvimento}
+
+\subsection{Ambiente técnico}
+\subsubsection{Hardware}
+
+Na realização deste estágio utilizei apenas computadores pessoais, quer o portátil presencialmente, quer o fixo remotamente. Ambas as máquinas utilizam o sistema operativo Ubuntu \cite{ubuntu}.
+
+Foi necessária também a utilização de duas Virtual Machines, ambas com 8GB de memória RAM no mínimo para poderem suportar o serviço Puppet\cite{puppet} nos nodes, quer do Puppet Master\cite{puppet-master}, quer do Puppet Agent\cite{puppet-agent}.
+
+
+\subsubsection{Software}
+Ao longo do estágio utilizei várias ferramentas de software:
+
+\begin{itemize}
+    \item slack;
+	\item github;
+	\item Linux;
+	\item Ubuntu;
+	\item Puppet;
+	\item Facter;
+	\item Hiera;
+	\item r10k;
+\end{itemize}
+
+\cleardoublepage
+
+Slack \cite{slack} é uma plataforma de comunicação empresarial proprietária. O Slack oferece muitos recursos do estilo do IRC (Internet Relay Chat), incluindo salas de chat persistentes organizadas por tópico, grupos privados e mensagens diretas.
+Esta plataform é utilizada pelos membros da Angulo Sólido para comunicarem entre si, através de texto e de chamadas de aúdio e/ou vídeo, o que permite que possam esclarecer dúvidas entre si e discutir as melhores soluções para os projetos.
+
+Github \cite{github} é uma plataforma de hospedagem de código-fonte e arquivos com controlo de versões usando Git \cite{git}. Permitindo que os programadores ou qualquer usuário registado na plataforma contribuam em projetos privados e/ou Open Source \cite{opensource} a partir de qualquer canto do mundo.
+A plataforma de hospedagem foi responsável por hospedar o meu repositório do projeto de estágio que contém toda a documentação que utilizei para me guiar durante o processo.
+
+Linux \cite{linux} é o termo vulgarmente utilizado para referir os sistemas operativos que utilizam o Kernel Linux. O Kernel foi desenvolvido pelo programador finlandês Linus Torvalds, inspirado no sistema Minix.
+Base dos sistemas operativos usado durante a realização do projeto de estágio.
+
+Ubuntu \cite{ubuntu} é um sistema operativo de código aberto \cite{opensource}, construído a partir do \textit{kernel} Linux \cite{linux}, baseado na distribuição Debian e utiliza o GNOME como ambiente de trabalho e é desenvolvido pela Canonical.
+
+Puppet \cite{puppet} é uma ferramenta de código aberto \cite{opensource} para gestão de configurações cuja ideia principal é que se tenha a configuração centralizada num ponto, para que seja distribuída entre os diversos nós de uma determinada rede.
+
+Puppet Server \cite{puppet-master}: O Puppet \cite{puppet} é configurado numa arquitetura agente-servidor, em que o servidor primário (Puppet Master) gere as configurações de todos os agent nodes. O Puppet Server atua como o servidor primário, sendo ele uma aplicação que corre numa Java Virtual Machine (JVM) e tem como objetivo compilar os catálogos \cite{catalog} e determinados ficheiros.
+
+Facter \cite{facter} uma ferramenta que retorna factos sobre cada agente, como o seu hostname, o endereço IP, o sistema operativo e a sua versão, juntamente com muitos outros dados, que são recolhidos a partir do momento em que o agente entra em execução. Os factos são enviados para o Puppet Master \cite{puppet-master}, que automaticamente são transformados em variáveis para o Puppet \cite{puppet}.
+Caso seja necessário visualizar os factos disponíveis, basta correr o facter binary na linha de comandos. Cada facto é retornado como um par key $=>$ value. Por exemplo:
+
+operatingsystem $=>$ Ubuntu
+
+ipaddress $=>$ 10.0.0.10
+
+Quando combinados com a configuração definida no Puppet, estes factos permitem personalizar as configurações para cada host, como por exemplo, criar recursos genéricos como definições de network e personalizar com dados de cada agente, ou até mesmo escolher de acordo com o sistema operativo em uso que comandos usar para instalar um determinado package, como por exemplo, se o Facter verificar que se trata de um sistema Ubuntu, utilizar o comando aptitude, se for Red Hat usar yum, etc.
+
+Hiera \cite{hiera}: Um dos pontos fortes do Puppet é o facto de o código ser reutilizável. Um código que serve várias necessidades tem que ser configurável: colocar informação específica numa configuração externa, em vez de estar presente no código fonte.
+O Puppet utiliza o Hiera em duas vertentes, sendo elas guardar os dados das configurações em pares key-value e procurar que dados é que um certo módulo precisa para aplicar a um certo node durante a compilação de um catálogo. Estas duas operações são feitas, respetivamente, através de Automatic Parameter Lookup para classes incluídas num catálogo e Explicit lookup calls.
+A hierarquia de lookups do Hiera funciona através de um padrão de "defaults, with overrides”, ou seja, se a solução default não funcionar temos uma hierarquia de alternativas. O Hiera usa os factos do Puppet \cite{puppet} para especificar as data sources, para que seja possível existir um override na infraestrutura em causa. Esta ferramenta funciona como se fosse uma função, que recebe argumentos de cada um dos nodes e age em função dos mesmos.
+
+r10k \cite{r10k} é uma ferramenta que permite gerir as configurações de um determinado ambiente. As alterações no código são feitas através da linha de comandos do r10k no servidor primário. Com base no código nos branches dos repositórios de controlo, o r10k cria ambientes no server primário para aplicar em cada node. No fundo, é bastante útil para não termos que aplicar a totalidade do código num determinado node mas sim dividi-lo em branches e aplicá-los em nodes separadamente.
+
+\subsubsection{Ambiente aplicacional}
+Este sistema é composto por dois ambientes distintos:
+
+\begin{itemize}
+    \item \textit{Puppet Master} \cite{puppet-master};
+    \item \textit{Puppet Agent} \cite{puppet-agent}.
+\end{itemize}
+
+Estes dois ambientes interagem da seguinte forma: o Puppet Master \cite{puppet-master} controla toda a informação relativa a uma ou mais configurações, já do outro lado, cada node Puppet Agent \cite{puppet-agent} faz um pedido ao Puppet Master \cite{puppet-master} para que este lhe aplique uma determinada configuração.
+
+\subsection{Metodologia de trabalho}
+Na realização do projeto não foi desenvolvido um software, logo, não existiu um processo de desenvolvimento e consequentemente gestão do mesmo.
+
+Embora isto, foi feito o devido planeamento de todo o trabalho a desenvolver, dividindo-o em fases distintas para se trabalhar ao longo do estágio, e sempre que fora necessário procedeu-se à alteração do mesmo.
+
+Uma vez que não existiu equipa de trabalho, interagi apenas com o Eng. Pedro Pessoa. 
+
+\cleardoublepage
+\section{Trabalho desenvolvido}
+No início do estágio comecei por ter uma reunião com o CEO da mesma, Eng. Pedro Pessoa, na qual me foram apresentadas as diferentes etapas para a realização do estágio:
+
+Na primeira etapa do projeto, foi-me proposto fazer um resumo acerca do que é o Puppet \cite{puppet} em si e as principais diferenças entre cada nova versão do mesmo, funções deprecated e alterações a serem feitas no código, uma vez que o principal objetivo do estágio era atualizar a infraestrutura da outrora atual versão 3 para a versão 7. Além desta distinção entre versões foi também feita a pesquisa intensa e anotação das principais características de ferramentas dentro do próprio Puppet, tais como r10k \cite{r10k}, Facter \cite{facter} e Hiera \cite{hiera}. Foi feito também o mesmo trabalho para guiar a instalação de um ambiente em Puppet 7 e para um eventual upgrade de uma infraestrutura Puppet 3 para Puppet 7.
+
+No que diz respeito à segunda etapa, acompanhado da respetiva documentação, a instalação de um ambiente Puppet Master \cite{puppet-master}-Puppet Agent \cite{puppet-agent} na versão 7, adicionando as ferramentas r10k \cite{r10k} e Hiera \cite{hiera} e finalmente testar a sua execução com módulos do próprio Puppet \cite{puppet}.
+
+\subsection{Descrição detalhada}
+
+\subsubsection{Repositório e documentação}
+Numa primeira fase do estágio, ficou acordado começar por resumir todo o trabalho escrevendo toda a documentação necessária para a realização do mesmo, e para esse efeito criei um repositório na plataforma Github \cite{github} em que coloquei toda a informação que fui obtendo e registando em formato Markdown \cite{markdown}. Realizei este mesmo processo para a uma parte introdutória sobre o Puppet \cite{puppet} e as suas ferramentas, para instalação de um sistema em Puppet7, para instalação do r10k \cite{r10k}, o porquê de não ter optado pelo uso de PuppetDB \cite{puppetdb} e finalmente para o processo de upgrade de versões do Puppet, neste caso da versão 3 para a versão 7.
+
+\subsubsection{Instalação de um Puppet Master e de um Puppet Agent em diferentes VM's}
+Esta etapa do projeto foi realizada inteiramente a operar em duas Virtual Machines, uma que iria conter o node do Puppet Master \cite{puppet-master} e outra para conter o node de um  Puppet Agent \cite{puppet-agent}. 
+
+Comecei por fazer a devida instalação do Puppet Master \cite{puppet-master} numa das máquinas com os respetivos comandos de instalação para um sistema Ubuntu \cite{ubuntu}. Depois procedi a instalar o respetivo Puppet Agent \cite{puppet-agent} na outra máquina da mesma forma, sempre a consultar a respetiva documentação de apoio.
+
+Para colocar estes dois nodes a funcionar em conjunto foi necessária uma pequena configuração em ambos os lados do ambiente Puppet \cite{puppet} que se dividiu em 3 etapas. Inicialmente foi necessário alterar a variável PATH do lado do Agente devido ao diretório em que estão inseridos os comandos Puppet \cite{puppet} não coincidir com a mesma por default (após a instalação do Agente). Em seguida, foi necessário alterar a setting server do Agente para coincidir com o IP da máquina do Puppet Master \cite{puppet-master}. Finalmente, para completar a conexão Master-Agent, foi necessário validar o certificado deste Agente, e para isso teve que ser gerado um novo certificado do lado do Agente que posteriormente teve que ser validado pelo Master.
+
+Após o sistema estar devidamente instalado e em pleno funcionamento, procedi à instalação da ferramenta r10k no Puppet Master \cite{puppet-master}, que funciona através de um repositório, neste caso criado no Github \cite{github}, que contém todas configurações feitas dentro do próprio r10k \cite{r10k} em que cada branch corresponde a um diferente ambiente de produção. Ferramenta esta (r10k) que posteriormente trabalhou em conjunto com o Hiera \cite{hiera}. 
+
+Comecei por testar o seu funcionamento com a inserção do módulo NTP \cite{ntp} de modo a alterar certas configurações no agente, ou seja, foi feita uma alteração num branch com os dados deste módulo e após o update dos mesmos para o repositório foi feito um deployment destas alterações ainda no Puppet Master \cite{puppet-master}. Para concluir este teste, do lado do Puppet Agent \cite{puppet-agent} é executado um comando que tem como argumento o nome do ambiente (corresponde ao nome do branch criado no repositório) que queremos executar e podemos após alguns segundos verificar as alterações que foram feitas na própria consola do Agente.
+
+Todo este processo irá estar presente no capítulo seguinte com o guia completo para a instalação desta infraestrutura.
+
+\subsubsection{Guia para a instalação do Puppet7 de raíz}
+Para utilizar o Puppet, há que fazer uma instalação inicial e um processo de setup dos seus componentes.
+O Puppet está distribuído em vários packages, incluindo puppet server, puppet agent e puppetdb. O Puppet Server controla toda a informação das configurações de um ou mais agent nodes (equivale ao Puppet Master).
+Esta instalação é dividida em diversos passos:
+\begin{itemize}
+    \item Instalação do repositório da plataforma Puppet
+    \item Instalação do Puppet Server
+    \item Instalação de um Puppet Agent
+\end{itemize}
+
+A partir da instalação destes componentes separadamente, podemos começar a personalizar as configurações para cada node e instalar outros componentes à medida que a nossa infraestrutura vai crescendo.
+
+Os comandos de instalação apresentados mais à frente irão ser apenas do tipo apt e funcionais apenas em sistemas Ubuntu.
+
+\paragraph{Instalação do repositório da plataforma Puppet}
+A partir de um login do utilizador em root, fazer o download do package e correr o dpkg em install mode:
+\begin{lstlisting}
+sudo apt-get updatewget <PACKAGE_URL>
+sudo dpkg -i <FILE_NAME>.deb
+\end{lstlisting}
+
+Utilizando por exemplo, um repositório focal:
+\begin{lstlisting}
+wget https://apt.puppet.com/puppet7-release-focal.deb
+sudo dpkg -i puppet7-release-focal.deb
+\end{lstlisting}
+
+E em seguida dar update à lista de packages apt:
+\begin{lstlisting}
+sudo apt-get update
+\end{lstlisting}
+
+\paragraph{Instalação do Puppet Server}
+Antes de instalar:
+
+Antes da instalação, há que rever os sistemas operativos suportados. Ao contrário do Puppet Agent, o Puppet Server não é suportado para MacOS, mas sim em Red Hat Enterprise Linux 6, 7, 8, Debian 9 (Stretch), 10 (Buster) e Ubuntu 16.04 (Xenial, amd64 only). É necessário certificar também que o sistema possui pelo menos 2GB de RAM disponíveis.
+
+Instalação:
+
+Agora sim, proceder à instalação do package em si através do seguinte comando:
+\begin{lstlisting}
+sudo apt-get install puppetserver
+\end{lstlisting}
+
+Iniciar o serviço Puppet Server, executando:
+\begin{lstlisting}
+sudo systemctl start puppetserver
+\end{lstlisting}
+
+Verificar se o serviço está instalado corretamente:
+\begin{lstlisting}
+puppetserver -v
+\end{lstlisting}
+
+\paragraph{Instalação e configuração dos Puppet Agents}
+Instalação do Agente:
+
+Para instalar um agente basta executar o seguinte comando na consola:
+\begin{lstlisting}
+sudo apt-get install puppet-agent
+\end{lstlisting}
+
+Em seguida, iniciar o serviço Puppet:
+\begin{lstlisting}
+sudo /opt/puppetlabs/bin/puppet resource service puppet ensure=running enable=true
+\end{lstlisting}
+
+Configuração:
+
+A configuração dos agentes divide-se em 3 etapas:
+\begin{enumerate}
+
+\item Configurar o PATH para o acesso aos comandos Puppet:
+Os comandos Puppet estão localizados no diretório bin (/opt/puppetlabs/bin/). Este diretório não é a variável PATH por default , ou seja, vamos ter que adicionar o diretório bin ao PATH, através do seguinte comando:
+\begin{lstlisting}
+export PATH=/opt/puppetlabs/bin:$PATH
+\end{lstlisting}
+
+Esta operação também pode ser feita através da alteração do PATH nos ficheiros de configuração .profile ou .bashrc.
+
+\item Configuração do server setting:
+
+Esta etapa permitirá definir a setting server = puppetserver.example.com em puppet.conf: 
+\begin{lstlisting}
+sudo -i puppet config set server puppetserver.example.com --section main
+\end{lstlisting}
+
+Além desta operação é possível alterar outras definições como por exemplo: 
+\begin{lstlisting}
+serverport, ca_server, ca_port, report_server e report_port. 
+\end{lstlisting}
+
+
+\item Conectar o agent ao Server primário e validar o certificado:
+
+Depois de adicionado o Server, é necessário conectar o Puppet agent ao Server primário para que este verifique em intervalos regulares o estado do mesmo, retornando o respetivo catálogo e atualizar a configuração, se necessário.
+
+Para conectar o agente ao Server primário, executar:
+\begin{lstlisting}
+sudo -i puppet ssl bootstrap
+\end{lstlisting}
+
+Irá aparecer uma mensagem do tipo:
+\begin{lstlisting}
+Info: Creating a new RSA SSL key for <agent node>
+\end{lstlisting}
+
+No node do server primário, validar o certificado:
+\begin{lstlisting}
+sudo -i puppetserver ca sign --certname <name>
+\end{lstlisting}
+
+No node do agente, executar de novo o agente:
+\begin{lstlisting}
+sudo -i puppet ssl bootstrap
+\end{lstlisting}
+
+Para testar a ligação entre master e agente:
+\begin{lstlisting}
+sudo -i puppet agent -t
+\end{lstlisting}
+
+\end{enumerate}
+
+\subsubsection{Guia para a instalção do r10k}
+
+Instalação do r10k via Ruby Gems:
+
+\begin{lstlisting}
+/opt/puppetlabs/puppet/bin/gem install r10k
+\end{lstlisting}
+
+Configurar o r10k criando a seguinte estrutura de diretórios e o ficheiro /etc/puppetlabs/r10k/r10k.yaml assegurando que contém a seguinte informação:
+\begin{lstlisting}
+# The location to use for storing cached Git repos
+:cachedir: '/var/cache/r10k'
+# A list of git repositories to create
+:sources:
+  # This will clone the git repository and instantiate an environment per
+  # branch in /etc/puppetlabs/code/environments
+  :my-org:
+    remote: 'git@github.com:$_Insert GitHub Organization Here_$/$_Insert GitHub Repository That Will Be Used For Your Puppet Code Here_$'
+    basedir: '/etc/puppetlabs/code/environments'
+\end{lstlisting}
+
+Configurar também o ficheiro /etc/puppetlabs/puppet/hiera.yaml com os seguintes conteúdos:
+
+\begin{lstlisting}
+---
+# Hiera 5 Global configuration file
+
+version: 5
+
+defaults:
+  datadir: /etc/puppetlabs/code/environments/%{environment}/hieradata/
+  data_hash: yaml_data
+
+hierarchy:
+  - name: "Common"
+    paths:
+      - "common.yaml"
+\end{lstlisting}
+
+\paragraph{Configurar o Repositório para o Puppet Code utilizando o módulo NTP}
+Popular o repositório clonando o mesmo localmente e executando cada uma das seguintes ações:
+
+Ter em conta que o environment default do puppet é production. É recomendado alterar o git branch default de master para production de modo a corresponder. Em alternativa, é possível também definir o environment do agente para master.
+
+\begin{lstlisting}
+mkdir -p {modules,site/profile/manifests,hieradata}
+touch hieradata/common.yaml
+touch environment.conf
+touch Puppetfile
+touch site.pp
+\end{lstlisting}
+
+Editar environment.conf e garantir que tem os seguintes conteúdos:
+\begin{lstlisting}
+manifest = site.pp
+modulepath = modules:site
+\end{lstlisting}
+
+Editar site.pp e garantir que tem os seguintes conteúdos:
+\begin{lstlisting}
+node agent1.local {
+  include ntp
+}
+
+class { 'ntp':
+}
+\end{lstlisting}
+
+Editar `hieradata/common.yaml e garantir que tem os seguintes conteúdos:
+\begin{lstlisting}
+---
+ntp::servers:
+  - 0.europe.pool.ntp.org
+  - 1.europe.pool.ntp.org
+  - 2.europe.pool.ntp.org
+  - 3.europe.pool.ntp.org
+\end{lstlisting}
+
+Editar Puppetfile e garantir que tem os seguintes conteúdos:
+\begin{lstlisting}
+forge 'forge.puppetlabs.com'
+
+# Forge Modules
+mod 'puppetlabs-ntp', '9.1.0'
+mod 'puppetlabs/stdlib'
+\end{lstlisting}
+
+Garantir que o r10k corre de maneira a aceder ao repositório git. Pode-se testar o acesso ao mesmo usando sudo git clone yourrepoURL.
+
+\paragraph{Resumindo}
+Temos agora as seguintes peças a funcionar:
+\begin{enumerate}
+    \item Puppet Master
+    \item Hiera
+    \item r10k
+    \item Repositório para o Puppet Code
+    \item 'profile' inicial com o nome 'base' que irá configurar o NTP nos agentes. Esta base irá servir para fazer variadas funções. A parte mais interessante é mesmo a capacidade de utilizar Git branches para ajudar a gerir a infraestrutura como parte do ciclo de vida do desenvolvimento de software.
+    
+    Agora, quando for necessário testar um novo profile, podemos fazer o seguinte:
+    \begin{itemize}
+        \item Criar um novo branch no repositório
+        \item Criar código Puppet neste novo branch
+        \item Push deste novo branch para o repositório
+        \item Deploy como um novo environment usando: 
+        \begin{lstlisting}
+        sudo /opt/puppetlabs/puppet/bin/r10k deploy environment -p
+        \end{lstlisting}
+    \end{itemize}
+    A partir de qualquer agente (incluindo o master), podemos correr o teste a este novo environment, especificando-o na linha de comandos. Por exemplo, se a nova branch tiver o nome teste, utilizar o seguinte comando:
+    \begin{lstlisting}
+    sudo -i puppet agent -t --environment teste
+    \end{lstlisting}
+    Como foi dito anteriormente, podemos também modificar /etc/puppetlabs/puppet/puppet.conf num node e adicionar um environment predefinido:
+    \begin{lstlisting}
+    ...
+    [agent]
+    environment = teste
+    \end{lstlisting}
+\end{enumerate}
+
+\subsubsection{Guia para um eventual upgrade dos Agents Puppet 3 para Puppet 7}
+
+\paragraph{Puppet 3 para Puppet 5}
+Apesar de terem havido várias mudanças no Puppet desde a versão 3.8, o processo de upgrade dos agentes do Puppet 3 pode ser automatizado ao contrário dos seus servidores. O módulo puppet agent executa automaticamente as seguintes tarefas:
+\begin{itemize}
+    \item Instalação do repositório Puppet, caso não esteja presente
+    \item Instala a versão mais recente do package puppet agent, que substitui as versões instaladas do Puppet, Facter e Hiera
+    \item Copia os ficheiros SSL do Puppet para a nova localização
+    \item Copia os ficheiros puppet.conf antigos para a nova localização e limpa settings antigos que tenham sido removidos no Puppet 4 ou que necessitem de um reset para os seus valores default
+    \item Garante que o serviço Puppet  está a funcionar corretamente
+\end{itemize}
+
+\paragraph{Puppet 5 para Puppet 7} 
+Para dar upgrade aos puppet agents, apenas é necessário adicionar as duas keys que se seguem ao global Hiera e esperar por dois puppet-runs:
+\begin{lstlisting}
+profile::puppet::collection: 'puppet7'
+\end{lstlisting}
+\begin{lstlisting}
+puppet_agent::package_version: 'auto'
+\end{lstlisting}
+
+\cleardoublepage
+\section{Avaliação crítica}
+Durante o período de duração deste estágio, estive em contacto com uma área que nunca tinha interagido e sempre tive curiosidade em perceber como era trabalhada, principalmente por estar um pouco distante dos conhecimentos que fui desenvolvendo ao longo da licenciatura em Eng. Informática e por isso quis complementar um pouco mais o que aprendi com algo diferente.
+
+Achei particularmente interessante o facto de que a maior parte das ações se fazem a partir da linha de comandos e não através do desenvolvimento de código num editor, o que confesso que me senti à vontade para fazer.
+
+Inicialmente, achei um pouco aborrecida a fase da pesquisa e escrita da documentação, mas fiquei a perceber que se trata de uma parte essencial do trabalho assim que pus em prática o que tinha escrito, pois já estava tudo previamente resumido detalhadamente, o que tornou o trabalho muito mais fácil.
+
+Apesar de ter tido algumas dificuldades nos processos de instalação e deployment do software, acho que todos esses obstáculos foram bastante úteis para ganhar conhecimento de como resolver certos problemas que vão surgindo à medida que se desenvolvem projetos deste género e tenho a certeza que vai ser útil no futuro.
+
+Em suma, foi um projeto de estágio em que na minha opinião ganhei uma certa experiência do que é trabalhar na área de Engenharia Informática e me deu ainda mais vontade de continuar a ganhar mais e mais conhecimento para poder prosseguir uma carreira que seja o melhor possível dentro desta profissão.
+
+\cleardoublepage
+\bibliographystyle{unsrt}
+\bibliography{bibs}
+\label{referencias}
+
+\end{document}
