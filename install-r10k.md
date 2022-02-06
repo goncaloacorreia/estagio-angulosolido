@@ -1,6 +1,6 @@
 # Instalação e configuração do r10k
 
-Instalação do r10k via Ruby Gems.
+Instalação do r10k via Ruby Gems:
 
 ```
 /opt/puppetlabs/puppet/bin/gem install r10k
@@ -38,7 +38,7 @@ hierarchy:
 
 ```
 
-# Configurar o Repositório para o Puppet Code
+## Configurar o Repositório para o Puppet Code
 
 Popular o repositório clonando o mesmo localmente e executando cada uma das seguintes ações:
 
@@ -89,7 +89,7 @@ mod 'puppetlabs/stdlib'
 ```
 
 Garantir que o r10k corre de maneira a aceder ao repositório git. Pode-se testar o acesso ao mesmo usando `sudo git clone yourrepoURL`.
-# Resumo
+## Resumo
 Temos agora as seguintes peças a funcionar:
 1. Puppet master
 2. Hiera

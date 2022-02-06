@@ -1,6 +1,6 @@
 # **PuppetDB**
 
-PuppetDB é a serviço open source para guardar dados gerados pelo Puppet, incluindo, por exemplo, catálogos e facts. Foi concebido para reforçar o uso do Puppet com o aumento da perfomance em mente. Guarda toda a informação assíncronamente, libertando o Puppet Master para compilar mais catálogos em simultâneo.
+PuppetDB é um serviço open source para guardar dados gerados pelo Puppet, incluindo, por exemplo, catálogos e factos. Foi concebido para reforçar o uso do Puppet com o aumento da perfomance em mente. Guarda toda a informação assíncronamente, libertando o Puppet Master para compilar mais catálogos em simultâneo.
 
 ## **Porquê PuppetDB?**
 
