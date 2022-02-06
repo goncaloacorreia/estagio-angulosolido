@@ -127,14 +127,14 @@ No primeiro dia do estágio, dirigi-me à sede em Évora, tal como noutras ocasi
 \section{Estado da arte}
 No âmbito do trabalho de estágio foi necessário realizar análise de entre o leque de ferramentas propostas, quais iriam ser utilizadas, sendo elas Puppet \cite{puppet}, Hiera \cite{hiera}, r10k \cite{r10k} e PuppetDB \cite{puppetdb}. Foi feita então a decisão da não inclusão da ferramenta PuppetDB \cite{puppetdb} e a inclusão das outras tecnologias que se revelaram totalmente pertinentes, visto que cada uma delas iria ter um papel crucial no desenvolvimento do projeto tendo em conta o objetivo do mesmo. A PuppetDB é um serviço open source \cite{opensource} para guardar dados gerados pelo Puppet. Foi concebido para reforçar o uso do Puppet com o aumento da performance em mente, guardando toda a informação assíncronamente, libertando o Puppet Master \cite{puppet-master} para compilar mais catálogos em simultâneo, garantindo também a integridade dos dados guardados na própria PuppetDB.
 
-Apesar da revisão de todas estas vantagens de utilizar PuppetDB, foi decidido neste projeto a não utilização da ferramenta, visto que não se iria justificar a introdução de uma nova peça com este conjunto de funcionalidades.
+Apesar da revisão de todas as vantagens em utilizar PuppetDB, foi decidido neste projeto a não utilização da ferramenta, visto que não se iria justificar a introdução de uma nova peça com este conjunto de funcionalidades.
 \cleardoublepage
 \section{Ambiente de desenvolvimento}
 
 \subsection{Ambiente técnico}
 \subsubsection{Hardware}
 
-Na realização deste estágio utilizei apenas computadores pessoais, quer o portátil presencialmente, quer o fixo remotamente. Ambas as máquinas utilizam o sistema operativo Ubuntu \cite{ubuntu}.
+Na realização deste estágio foram utilizados apenas computadores pessoais, quer o portátil presencialmente, quer o fixo remotamente. Ambas as máquinas utilizam o sistema operativo Ubuntu \cite{ubuntu}.
 
 Foi necessária também a utilização de duas Virtual Machines, ambas com 8GB de memória RAM no mínimo para poderem suportar o serviço Puppet\cite{puppet} nos nodes, quer do Puppet Master\cite{puppet-master}, quer do Puppet Agent\cite{puppet-agent}.
 
@@ -156,7 +156,7 @@ Ao longo do estágio utilizei várias ferramentas de software:
 \cleardoublepage
 
 Slack \cite{slack} é uma plataforma de comunicação empresarial proprietária. O Slack oferece muitos recursos do estilo do IRC (Internet Relay Chat), incluindo salas de chat persistentes organizadas por tópico, grupos privados e mensagens diretas.
-Esta plataform é utilizada pelos membros da Angulo Sólido para comunicarem entre si, através de texto e de chamadas de aúdio e/ou vídeo, o que permite que possam esclarecer dúvidas entre si e discutir as melhores soluções para os projetos.
+Esta plataforma é utilizada pelos membros da Angulo Sólido para comunicarem entre si, através de texto e de chamadas de aúdio e/ou vídeo, o que permite que possam esclarecer dúvidas entre si e discutir as melhores soluções para os projetos.
 
 Github \cite{github} é uma plataforma de hospedagem de código-fonte e arquivos com controlo de versões usando Git \cite{git}. Permitindo que os programadores ou qualquer usuário registado na plataforma contribuam em projetos privados e/ou Open Source \cite{opensource} a partir de qualquer canto do mundo.
 A plataforma de hospedagem foi responsável por hospedar o meu repositório do projeto de estágio que contém toda a documentação que utilizei para me guiar durante o processo.
@@ -204,7 +204,7 @@ Uma vez que não existiu equipa de trabalho, interagi apenas com o Eng. Pedro Pe
 
 \cleardoublepage
 \section{Trabalho desenvolvido}
-No início do estágio comecei por ter uma reunião com o CEO da mesma, Eng. Pedro Pessoa, na qual me foram apresentadas as diferentes etapas para a realização do estágio:
+No início do estágio comecei por ter uma reunião com o CEO da empresa, Eng. Pedro Pessoa, na qual me foram apresentadas as diferentes etapas para a realização do estágio:
 
 Na primeira etapa do projeto, foi-me proposto fazer um resumo acerca do que é o Puppet \cite{puppet} em si e as principais diferenças entre cada nova versão do mesmo, funções deprecated e alterações a serem feitas no código, uma vez que o principal objetivo do estágio era atualizar a infraestrutura da outrora atual versão 3 para a versão 7. Além desta distinção entre versões foi também feita a pesquisa intensa e anotação das principais características de ferramentas dentro do próprio Puppet, tais como r10k \cite{r10k}, Facter \cite{facter} e Hiera \cite{hiera}. Foi feito também o mesmo trabalho para guiar a instalação de um ambiente em Puppet 7 e para um eventual upgrade de uma infraestrutura Puppet 3 para Puppet 7.
 
@@ -352,7 +352,7 @@ sudo -i puppet agent -t
 
 \end{enumerate}
 
-\subsubsection{Guia para a instalção do r10k}
+\subsubsection{Guia para a instalação do r10k}
 
 Instalação do r10k via Ruby Gems:
 
